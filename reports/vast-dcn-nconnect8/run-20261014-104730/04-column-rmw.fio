@@ -1,0 +1,31 @@
+# P4 — MS column read-modify-write (DP3 applybeam / Crystalball predict / casacore subtract)
+#
+# What it models: reading the DATA column chunk-wise and writing a new column
+# (MODEL_DATA / CORRECTED_DATA / BP_CORRECTED) into the MS — the pattern that
+# grows a 3.2 TB MS by another TB-scale column. casacore subtract uses
+# 100,000-row chunks; Crystalball uses dask chunked writes; DP3 streams
+# timestep blocks with ~1 MB tile writes. Interleaved read+write of equal-sized
+# streams on the same filesystem approximates all three.
+#
+# DDFacet variant: its .ddfcache writes a full npy copy of vis+flags next to
+# the MS on first cycle (captured by P2's write half).
+
+[column-rmw-read]
+description=Chunked sequential read of MS DATA column
+directory=/data/bench/run-20261014-104730
+filename=ms_col_a.bin
+size=96G
+rw=read
+ioengine=psync
+bs=1g
+iodepth=1
+
+[column-rmw-write]
+description=Chunked sequential write of new MS column (CORRECTED_DATA analog)
+directory=/data/bench/run-20261014-104730
+filename=ms_col_new.bin
+size=72G
+rw=write
+ioengine=psync
+bs=1g
+iodepth=1

@@ -1,0 +1,29 @@
+# P3 — Deep-imaging major cycles (repeated sequential passes over reordered data)
+#
+# What it models: WSClean Cotton-Schwab loop. Per major iteration (mgain=0.85,
+# niter=1e5-1e7): predict (read model + write model vis) + inversion (read
+# data + weights) = 2 full passes over the visibility-sized reordered files;
+# typical deep runs do ~10-20 major cycles. Measured (DSC-065, 22 h / 1M-iter
+# run): 1.75 TB read + 1.45 TB written against a 263 GB averaged input.
+#
+# loops=${CYCLES} replays the whole file; default CYCLES=30 (2 x 15 cycles).
+
+# Concurrency: the real gridding uses 6-40 reader threads interleaved with
+# compute; the traced run's effective in-flight depth was ~1 (CPU ~60% during
+# reads). JOBS=1 (default) reproduces the traced depth; JOBS=8/16 spreads
+# that many readers over disjoint regions — use for ranking-flip checks on
+# parallel-friendly filesystems.
+
+[major-cycle-rereads]
+description=Repeated full sequential passes over the reordered temp data, JOBS readers
+directory=${DIR}
+filename=reordered.tmp
+size=${REORD_PJ}G
+offset_increment=${REORD_PJ}G
+numjobs=${JOBS}
+rw=read
+ioengine=psync
+bssplit=16k/60,64k/30,256k/10
+loops=${CYCLES}
+iodepth=1
+rate=80m

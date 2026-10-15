@@ -1,0 +1,279 @@
+{
+  "fio version" : "fio-3.36",
+  "timestamp" : 1791971323,
+  "timestamp_ms" : 1791971323306,
+  "time" : "Wed Oct 14 09:48:43 2026",
+  "jobs" : [
+    {
+      "jobname" : "major-cycle-rereads",
+      "groupid" : 0,
+      "job_start" : 1791970307451,
+      "error" : 0,
+      "eta" : 0,
+      "elapsed" : 1016,
+      "job options" : {
+        "description" : "Repeated full sequential passes over the reordered temp data, JOBS readers",
+        "directory" : "/data/bench/run-20261014-091337",
+        "size" : "72G",
+        "offset_increment" : "72G",
+        "numjobs" : "1",
+        "rw" : "read",
+        "ioengine" : "psync",
+        "bssplit" : "16k/60,64k/30,256k/10",
+        "loops" : "1",
+        "iodepth" : "1",
+        "rate" : "2000m",
+        "filename" : "reordered.tmp"
+      },
+      "read" : {
+        "io_bytes" : 77309411328,
+        "io_kbytes" : 75497472,
+        "bw_bytes" : 76103700,
+        "bw" : 74320,
+        "iops" : 4645.001245,
+        "runtime" : 1015843,
+        "total_ios" : 4718592,
+        "short_ios" : 0,
+        "drop_ios" : 0,
+        "slat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        },
+        "clat_ns" : {
+          "min" : 969,
+          "max" : 728078511,
+          "mean" : 214741.259356,
+          "stddev" : 2772783.393186,
+          "N" : 4718592,
+          "percentile" : {
+            "1.000000" : 1064,
+            "5.000000" : 1144,
+            "10.000000" : 1192,
+            "20.000000" : 1256,
+            "30.000000" : 1384,
+            "40.000000" : 1928,
+            "50.000000" : 2416,
+            "60.000000" : 2704,
+            "70.000000" : 2960,
+            "80.000000" : 3312,
+            "90.000000" : 4256,
+            "95.000000" : 259072,
+            "99.000000" : 2605056,
+            "99.500000" : 14876672,
+            "99.900000" : 25821184,
+            "99.950000" : 32899072,
+            "99.990000" : 78118912
+          }
+        },
+        "lat_ns" : {
+          "min" : 1009,
+          "max" : 728078551,
+          "mean" : 214808.578072,
+          "stddev" : 2772783.520160,
+          "N" : 4718592
+        },
+        "bw_min" : 513,
+        "bw_max" : 128000,
+        "bw_agg" : 100.000000,
+        "bw_mean" : 74361.754308,
+        "bw_dev" : 21691.323450,
+        "bw_samples" : 2031,
+        "iops_min" : 32,
+        "iops_max" : 8000,
+        "iops_mean" : 4647.524372,
+        "iops_stddev" : 1355.711234,
+        "iops_samples" : 2031
+      },
+      "write" : {
+        "io_bytes" : 0,
+        "io_kbytes" : 0,
+        "bw_bytes" : 0,
+        "bw" : 0,
+        "iops" : 0.000000,
+        "runtime" : 0,
+        "total_ios" : 0,
+        "short_ios" : 0,
+        "drop_ios" : 0,
+        "slat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        },
+        "clat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        },
+        "lat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        },
+        "bw_min" : 0,
+        "bw_max" : 0,
+        "bw_agg" : 0.000000,
+        "bw_mean" : 0.000000,
+        "bw_dev" : 0.000000,
+        "bw_samples" : 0,
+        "iops_min" : 0,
+        "iops_max" : 0,
+        "iops_mean" : 0.000000,
+        "iops_stddev" : 0.000000,
+        "iops_samples" : 0
+      },
+      "trim" : {
+        "io_bytes" : 0,
+        "io_kbytes" : 0,
+        "bw_bytes" : 0,
+        "bw" : 0,
+        "iops" : 0.000000,
+        "runtime" : 0,
+        "total_ios" : 0,
+        "short_ios" : 0,
+        "drop_ios" : 0,
+        "slat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        },
+        "clat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        },
+        "lat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        },
+        "bw_min" : 0,
+        "bw_max" : 0,
+        "bw_agg" : 0.000000,
+        "bw_mean" : 0.000000,
+        "bw_dev" : 0.000000,
+        "bw_samples" : 0,
+        "iops_min" : 0,
+        "iops_max" : 0,
+        "iops_mean" : 0.000000,
+        "iops_stddev" : 0.000000,
+        "iops_samples" : 0
+      },
+      "sync" : {
+        "total_ios" : 0,
+        "lat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        }
+      },
+      "job_runtime" : 1015842,
+      "usr_cpu" : 0.439734,
+      "sys_cpu" : 3.730305,
+      "ctx" : 300131,
+      "majf" : 0,
+      "minf" : 20,
+      "iodepth_level" : {
+        "1" : 100.000000,
+        "2" : 0.000000,
+        "4" : 0.000000,
+        "8" : 0.000000,
+        "16" : 0.000000,
+        "32" : 0.000000,
+        ">=64" : 0.000000
+      },
+      "iodepth_submit" : {
+        "0" : 0.000000,
+        "4" : 100.000000,
+        "8" : 0.000000,
+        "16" : 0.000000,
+        "32" : 0.000000,
+        "64" : 0.000000,
+        ">=64" : 0.000000
+      },
+      "iodepth_complete" : {
+        "0" : 0.000000,
+        "4" : 100.000000,
+        "8" : 0.000000,
+        "16" : 0.000000,
+        "32" : 0.000000,
+        "64" : 0.000000,
+        ">=64" : 0.000000
+      },
+      "latency_ns" : {
+        "2" : 0.000000,
+        "4" : 0.000000,
+        "10" : 0.000000,
+        "20" : 0.000000,
+        "50" : 0.000000,
+        "100" : 0.000000,
+        "250" : 0.000000,
+        "500" : 0.000000,
+        "750" : 0.000000,
+        "1000" : 0.010000
+      },
+      "latency_us" : {
+        "2" : 40.929392,
+        "4" : 47.759692,
+        "10" : 4.387750,
+        "20" : 0.503265,
+        "50" : 0.126860,
+        "100" : 0.324143,
+        "250" : 0.906414,
+        "500" : 1.215638,
+        "750" : 0.362608,
+        "1000" : 0.139597
+      },
+      "latency_ms" : {
+        "2" : 2.058877,
+        "4" : 0.409635,
+        "10" : 0.205231,
+        "20" : 0.426356,
+        "50" : 0.217480,
+        "100" : 0.013330,
+        "250" : 0.010000,
+        "500" : 0.010000,
+        "750" : 0.010000,
+        "1000" : 0.000000,
+        "2000" : 0.000000,
+        ">=2000" : 0.000000
+      },
+      "latency_depth" : 1,
+      "latency_target" : 0,
+      "latency_percentile" : 100.000000,
+      "latency_window" : 0,
+      "desc" : "Repeated full sequential passes over the reordered temp data, JOBS readers"
+    }
+  ],
+  "disk_util" : [
+    {
+      "name" : "rbd3",
+      "read_ios" : 295850,
+      "write_ios" : 1238,
+      "read_sectors" : 150974576,
+      "write_sectors" : 106784,
+      "read_merges" : 0,
+      "write_merges" : 243,
+      "read_ticks" : 1977169,
+      "write_ticks" : 11310,
+      "in_queue" : 1988479,
+      "util" : 99.652190
+    }
+  ]
+}

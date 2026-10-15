@@ -1,0 +1,42 @@
+# P2 — WSClean reorder pass (or DDFacet .ddfcache fill)
+#
+# What it models: wsclean -reorder (auto-triggered when channels-out>1 or
+# mgain!=1.0): one sequential read of the MS DATA column while writing an
+# equivalent-size binary "reordered" temp copy next to the MS (no -temp-dir is
+# used by the SWF templates, so the write lands on the same filesystem).
+# Sizes: reordered set ~= 0.5-1x the MS DATA column (8 B vis + 4 B weight,
+# +8 B model if mgain!=1).
+#
+# The jobs run concurrently, mirroring the overlapping read/write streams.
+# Explicit size= on every job makes this profile self-sufficient (fio creates
+# the files if a preceding phase has not).
+
+[reorder-read-a]
+description=Sequential read of MS main column during reorder
+directory=/data/bench/run-20261014-104730
+filename=ms_col_a.bin
+size=96G
+rw=read
+ioengine=psync
+bs=1m
+iodepth=1
+
+[reorder-read-b]
+description=Sequential read of MS second column during reorder
+directory=/data/bench/run-20261014-104730
+filename=ms_col_b.bin
+size=48G
+rw=read
+ioengine=psync
+bs=1m
+iodepth=1
+
+[reorder-write]
+description=Write of reordered visibility temp files (.tmp/-w.tmp/-m.tmp analog)
+directory=/data/bench/run-20261014-104730
+filename=reordered.tmp
+size=72G
+rw=write
+ioengine=psync
+bs=1m
+iodepth=1

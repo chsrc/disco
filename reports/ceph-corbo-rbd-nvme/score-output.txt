@@ -1,0 +1,18 @@
+phase               GB moved    throughput      IOPS   p99 ms  headroom
+-----------------------------------------------------------------------
+(headroom = measured capability / SWE-SRC reference-run rate;
+ the reference was partly I/O-bound, so headroom > 1x means your
+ storage beats the reference experience — see report §7b)
+-----------------------------------------------------------------------
+00-ingest-write       103.08        1375 M/s     20975      0.0      5.5x
+02-reorder            231.93        1042 M/s      1287      0.0      2.1x
+03-major-cycles        77.31         345 M/s     21078      0.0      4.3x
+04-column-rmw         180.39        1039 M/s         1      0.0      2.1x
+06-imagechain-gen1     34.36        1617 M/s      2102      0.0     16.2x
+08-carta-tiles        125.83         419 M/s      1600      4.8    104.9x
+09-qa-sparse            2.15          11 M/s      1352      3.6      1.1x
+10-smallfiles           0.60        3339 M/s     27594      0.0    667.8x
+-----------------------------------------------------------------------
+bytes-weighted composite throughput: 895 MB/s (weights: dsc-065 measured trace)
+predicted full-run wall time (storage-bound, dsc-065): 1.0 h
+NOTE: the real run took 4.6 h compute-bound; if storage keeps up (all headroom > 1x), expect ~the real duration, not this bound.

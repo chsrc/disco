@@ -1,0 +1,88 @@
+# disco — FULL SCORE RUN on ceph-corbo-rbd-hdd (VAST NFS file storage)
+# Namespace: io500benchmark. Context: g-d (or gornergrat-tds-fqdn via ela).
+#
+# Runs the scored capability benchmark: 8 byte-dominant DSC phases, ~190 GB
+# read working set (96+48+72+...), ~450 GB transient on disk, ~15 min at
+# RATE_MULT=25, then prints the score.py table (weighted composite,
+# per-phase headroom, predicted full-DSC runtime) in the job log.
+#
+# Reproduce:
+#   kubectl --context g-d -n io500benchmark delete job disco --ignore-not-found
+#   kubectl --context g-d apply -f k8s-job-rbd-full.yaml
+#   kubectl --context g-d -n io500benchmark wait --for=condition=complete --timeout=1800s job/disco
+#   kubectl --context g-d -n io500benchmark logs job/disco
+#
+# Variants (edit env / args before applying):
+#   JOBS=8          multi-stream check (readers on disjoint regions)
+#   scale:          last arg of run-scenario.sh (1.0 = full size)
+#   RATE_MULT:      score defaults to 25; set higher/lower as needed
+#   Other storageclasses: change storageClassName (PVC below) — reuse the
+#   existing disco-data-vast PVC only if it uses the same class; for a
+#   different class create a new PVC (or delete + recreate this one).
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: disco-data-vast
+  namespace: io500benchmark
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: vast-dcn-nconnect8
+  resources:
+    requests:
+      storage: 500Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: disco
+  namespace: io500benchmark
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: bench
+        image: docker.io/library/ubuntu:24.04
+        env:
+        - name: PHASES
+          value: ""            # empty = all 8 score phases
+        command: ["/bin/bash", "-c"]
+        args:
+        - |
+          set -e
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get update -qq && apt-get install -y -qq --no-install-recommends fio gettext python3 > /dev/null
+          fio --version && envsubst --version | head -1 && python3 --version
+          /opt/disco/run-scenario.sh score /data/bench 1.0
+          RUN=$(ls -dt /data/bench/run-* | head -1)
+          echo "=== run dir: $RUN"
+          python3 /opt/disco/score.py "$RUN" || true
+        resources:
+          requests:
+            cpu: "2"
+            memory: 4Gi
+          limits:
+            cpu: "8"
+            memory: 8Gi
+        volumeMounts:
+        - name: bench-bin
+          mountPath: /opt/disco
+        - name: bench-profiles
+          mountPath: /opt/disco/profiles
+        - name: bench-data
+          mountPath: /data
+      volumes:
+      - name: bench-bin
+        configMap:
+          name: disco-bin
+          defaultMode: 0755
+      - name: bench-profiles
+        configMap:
+          name: disco-profiles
+          defaultMode: 0644
+      - name: bench-data
+        persistentVolumeClaim:
+          claimName: disco-data-vast

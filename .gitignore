@@ -1,0 +1,6 @@
+*.pyc
+*.swp
+.DS_Store
+__pycache__/
+deploy/fetch-results.sh
+docs/

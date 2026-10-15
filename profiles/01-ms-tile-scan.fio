@@ -1,0 +1,59 @@
+# P1 — MS tile-scan read (WSClean / DP3 / casacore column read path)
+#
+# What it models: one full pass over a CASA MeasurementSet. A real MS is a
+# directory of ~83 files where ~99% of the mass is two tiled-storage-manager
+# files (e.g. DSC-065 AA2 MS: table.f6_TSM0 = 2134 GB, table.f8_TSM0 = 1067 GB,
+# plus table.f7_TSM0 = 33 GB and ~80 KB-scale subtable files).
+#
+# Fidelity targets (measured on SWE-SRC, wsclean 2026.04, DSC-065 100k-iter run):
+#   - effective read syscall size ~15-16 KB (1.04 TB / 68.4M read syscalls)
+#   - mean read rate 62.6 MB/s — NOTE: this is an interaction outcome with
+#     SWE-SRC's storage, not a purely compute-bound demand (CPU was ~60%
+#     while reading; the same storage burst to 261-574 MB/s). This profile
+#     therefore REPLAYS the SWE-SRC reference experience (report §7b);
+#     for cross-site comparison use score/capacity modes instead.
+#   - reads dominated by casacore tile (~bucket) reads, mostly forward
+#
+# Concurrency: the real readers are effectively serial per column (DP3 /
+# wsclean-direct = 1 reader; the reorder path uses 4 threads). JOBS=1 (default)
+# reproduces the traced effective depth. JOBS=8/16 spreads that many readers
+# over disjoint regions of the column files — use it to check for ranking
+# flips on parallel-friendly filesystems (CephFS scales with streams).
+#
+# bssplit approximates the observed syscall-size distribution (~17 KB mean).
+# score/capacity scenarios strip the rate= caps automatically (UNCAPPED=1).
+
+[ms-col-a]
+description=Main visibility column file (table.f6_TSM0 analog), JOBS readers
+directory=${DIR}
+filename=ms_col_a.bin
+size=${COLA_PJ}G
+offset_increment=${COLA_PJ}G
+numjobs=${JOBS}
+rw=read
+ioengine=psync
+bssplit=4k/65,16k/25,64k/8,256k/2
+rate=64m
+iodepth=1
+
+[ms-col-b]
+description=Second tiled column file (table.f8_TSM0 analog), JOBS readers
+directory=${DIR}
+filename=ms_col_b.bin
+size=${COLB_PJ}G
+offset_increment=${COLB_PJ}G
+numjobs=${JOBS}
+rw=read
+ioengine=psync
+bssplit=4k/65,16k/25,64k/8,256k/2
+rate=49m
+iodepth=1
+
+[ms-meta]
+description=81 small MS subtable/metadata files (ANTENNA, FEED, SPECTRAL_WINDOW, ...)
+directory=${DIR}
+nrfiles=81
+filesize=1m
+rw=read
+ioengine=psync
+bs=8k

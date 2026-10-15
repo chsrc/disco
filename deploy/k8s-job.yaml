@@ -1,0 +1,40 @@
+# k8s Job running the scored benchmark against a PVC of the storage class
+# under test. Adapt image registry and claimName; one Job per storage class.
+#
+# Notes:
+# - Mount the ACTUAL storage class under test as /data (not emptyDir/overlay!)
+# - RWX (ReadWriteMany) access mode for CephFS-style shared filesystems
+# - Pin to a single node (spec.template.spec.nodeName) for comparable runs;
+#   scale with parallel Jobs (different run dirs) for multi-client tests
+# - Page cache is node-wide in k8s: the working set counts against the
+#   NODE's RAM, not the pod limit
+# - resources: fio+psync is light; this is plenty for the score scenario
+# - disk: score needs ~450 GB free on the mounted volume
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: disco-score
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      # nodeName: <pin-to-one-node-for-comparability>
+      containers:
+      - name: bench
+        image: your-registry/disco:latest
+        args: ["score", "/data/bench"]
+        resources:
+          requests:
+            cpu: "4"
+            memory: 8Gi
+          limits:
+            cpu: "8"
+            memory: 16Gi
+        volumeMounts:
+        - name: storage-under-test
+          mountPath: /data
+      volumes:
+      - name: storage-under-test
+        persistentVolumeClaim:
+          claimName: pvc-of-the-storage-class-under-test

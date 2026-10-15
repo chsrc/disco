@@ -1,0 +1,42 @@
+debconf: delaying package configuration, since apt-utils is not installed
+fio-3.36
+envsubst (GNU gettext-runtime) 0.21
+Python 3.12.3
+=== phase 00-ingest-write (09:13:37) -> 09-staging-ingest.fio
+=== phase 00-ingest-verify skipped (not in PHASES subset)
+=== phase 01-ms-tile-scan skipped (not in PHASES subset)
+=== phase 02-reorder (09:14:52) -> 02-reorder-copy.fio
+=== phase 03-major-cycles (09:31:47) -> 03-major-cycle-rereads.fio
+=== phase 04-column-rmw (09:48:43) -> 04-column-rmw.fio
+=== phase 04b-ms-copy skipped (not in PHASES subset)
+=== phase 05-burst-load skipped (not in PHASES subset)
+    (simulating CPU-bound processing with idle gap)
+=== phase 06-imagechain-gen1 (09:59:37) -> 06-fits-image-chain.fio
+=== phase 06-imagechain-gen2 skipped (not in PHASES subset)
+=== phase 06-imagechain-gen3 skipped (not in PHASES subset)
+=== phase 06-imagechain-gen4 skipped (not in PHASES subset)
+=== phase 07-injection-loop skipped (not in PHASES subset)
+=== phase 08-carta-tiles (10:00:25) -> 08-carta-random-tiles.fio
+=== phase 09-qa-sparse (10:05:25) -> 11-sparse-baseline-qa.fio
+=== phase 10-smallfiles (10:45:40) -> 10-smallfile-monitor.fio
+=== scenario score complete; results in /data/bench/run-20261014-091337
+per-phase fio JSON: /data/bench/run-20261014-091337/logs/<phase>.json
+=== run dir: /data/bench/run-20261014-091337
+phase               GB moved    throughput      IOPS   p99 ms  headroom
+-----------------------------------------------------------------------
+(headroom = measured capability / SWE-SRC reference-run rate;
+ the reference was partly I/O-bound, so headroom > 1x means your
+ storage beats the reference experience — see report §7b)
+-----------------------------------------------------------------------
+00-ingest-write       103.08        1395 M/s     21284      0.0      5.6x
+02-reorder            231.93         261 M/s       790      0.0      0.5x
+03-major-cycles        77.31          76 M/s      4645      0.0      1.0x
+04-column-rmw         180.39         338 M/s         1      0.0      0.7x
+06-imagechain-gen1     34.36        1445 M/s      1826      0.0     14.4x
+08-carta-tiles         20.34          68 M/s       259     85.5     16.9x
+09-qa-sparse            2.15           1 M/s       109     82.3      0.1x
+10-smallfiles           0.60        3248 M/s     28950      0.0    649.7x
+-----------------------------------------------------------------------
+bytes-weighted composite throughput: 646 MB/s (weights: dsc-065 measured trace)
+predicted full-run wall time (storage-bound, dsc-065): 4.5 h
+NOTE: the real run took 4.6 h compute-bound; if storage keeps up (all headroom > 1x), expect ~the real duration, not this bound.

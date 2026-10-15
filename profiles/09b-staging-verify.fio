@@ -1,0 +1,11 @@
+# P9b — Staging verification pass (Rucio checksum re-read of staged file)
+
+[staging-verify]
+description=Full sequential re-read of the staged file for checksum validation
+directory=${DIR}
+filename=ms_col_a.staged
+filesize=${COLA}G
+rw=read
+ioengine=psync
+bs=1m
+iodepth=1

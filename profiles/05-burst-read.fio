@@ -1,0 +1,33 @@
+# P5 — Burst-read then CPU-idle (pyuvdata / hera_pspec / PSRCHIVE / PyBDSF whole-file RAM loads)
+#
+# What it models: tools that load an entire file into RAM in one fast
+# sequential burst, then do minutes-to-hours of compute with zero I/O
+# (DSC-053: 12x 5.8 GB MS serial loads then triple Python loops; DSC-037:
+# hera_pspec re-loads the whole MS 2-3x; PSRCHIVE loads whole .ar files;
+# PyBDSF reads a 1 GB FITS in ~0.4 MB of storage traffic when page-cached).
+#
+# The runner pairs this phase with a sleep to produce the burst/idle duty
+# cycle. High bs = RAM-load speed; the interesting storage behaviour is the
+# burst amplitude and the page-cache reuse on consecutive loads.
+
+[burst-read-a]
+description=Whole-file RAM materialisation burst (main column)
+directory=${DIR}
+filename=ms_col_a.bin
+size=${COLA}G
+rw=read
+ioengine=psync
+bs=4m
+iodepth=1
+rate=2g
+
+[burst-read-b]
+description=Whole-file RAM materialisation burst (second column)
+directory=${DIR}
+filename=ms_col_b.bin
+size=${COLB}G
+rw=read
+ioengine=psync
+bs=4m
+iodepth=1
+rate=2g

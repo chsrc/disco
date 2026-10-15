@@ -1,0 +1,92 @@
+# disco on Kubernetes — RBD (block) storage variant
+# Namespace: io500benchmark (reused by request — do not create new namespaces)
+#
+# WHAT THIS IS: the SMOKE run (scenario=score, scale=0.005, 5 fast phases,
+# ~5 GiB on disk, ~2-3 min including image pull + apt). Verifies the whole
+# toolchain: configmap delivery, fio, envsubst rendering, phase execution,
+# JSON output, score.py.
+#
+# HOW TO TURN THIS INTO THE FULL SCORE RUN (~15 min, ~450 GiB on disk):
+#   1. In the container args, change the scale:   0.005  ->  1.0
+#   2. Delete (or empty) the PHASES env var so all 8 score phases run:
+#        env:
+#        - name: PHASES
+#          value: ""            # empty = all phases
+#   3. Delete the completed smoke Job first (same name):
+#        kubectl -n io500benchmark delete job disco
+#   4. Re-apply. The runner creates a NEW timestamped run dir on the same
+#      PVC; score.py output is printed in the job log.
+#   Optional knobs (add to env:):
+#     JOBS=8            multi-stream check (readers over disjoint regions)
+#     RATE_MULT=N       accelerate/stress (score already defaults to 25)
+#   Other storage classes: change storageClassName (note: RBD = block/RWO;
+#   for CephFS classes use RWX and the deploy/k8s-job.yaml variant).
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: disco-data
+  namespace: io500benchmark
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: ceph-corbo-rbd-nvme
+  resources:
+    requests:
+      storage: 500Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: disco
+  namespace: io500benchmark
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: bench
+        image: docker.io/library/ubuntu:24.04
+        env:
+        # SMOKE: fast subset only. Full run: set to "" (empty) for all phases.
+        - name: PHASES
+          value: "00-ingest-write 02-reorder 03-major-cycles 09-qa-sparse 10-smallfiles"
+        command: ["/bin/bash", "-c"]
+        args:
+        - |
+          set -e
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get update -qq && apt-get install -y -qq --no-install-recommends fio gettext python3 > /dev/null
+          fio --version && envsubst --version | head -1 && python3 --version
+          /opt/disco/run-scenario.sh score /data/bench 0.005
+          RUN=$(ls -dt /data/bench/run-* | head -1)
+          echo "=== run dir: $RUN"
+          python3 /opt/disco/score.py "$RUN" || true
+          echo "=== files:"; ls -la "$RUN"
+        resources:
+          requests:
+            cpu: "2"
+            memory: 4Gi
+          limits:
+            cpu: "8"
+            memory: 8Gi
+        volumeMounts:
+        - name: bench-bin
+          mountPath: /opt/disco
+        - name: bench-profiles
+          mountPath: /opt/disco/profiles
+        - name: bench-data
+          mountPath: /data
+      volumes:
+      - name: bench-bin
+        configMap:
+          name: disco-bin
+          defaultMode: 0755
+      - name: bench-profiles
+        configMap:
+          name: disco-profiles
+          defaultMode: 0644
+      - name: bench-data
+        persistentVolumeClaim:
+          claimName: disco-data
