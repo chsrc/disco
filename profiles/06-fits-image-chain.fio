@@ -6,8 +6,8 @@
 # channel images -> 6.7 GB cube; DSC-043: 4001 channel images -> 262 GB cubes.
 # PyBDSF contributes 5 aux images + 2 catalogues per processed slice.
 #
-# The runner executes this profile once per generation (4x default).
-# 8 parallel workers each process ${NIMG_W} files, so the total file count
+# The score runs this profile once (one generation); the real run chains
+# ~4-6 of them. 8 parallel workers each process ${NIMG_W} files, so the total file count
 # is NIMG_W x 8 (runner sets NIMG_W = NIMG / 8) — mirroring the documented
 # "do not try more than 8 processes" cap with per-worker file distribution.
 

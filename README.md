@@ -78,8 +78,8 @@ question than the real workload does).
 **6. We turned each pattern into a small fio job.**
 [fio](https://fio.readthedocs.io/) is the standard Linux I/O testing tool.
 Each pattern became a short job file (`profiles/`): the file layout, the
-read/write pattern, the request-size mixture, the concurrency, and the
-rate caps (for the modes that replay real speeds).
+read/write pattern, the request-size mixture, the concurrency, and — where
+the rate itself is part of what is modelled — a rate cap.
 The jobs intentionally contain no astronomy code and no real data,
 since we do not care about producing a scientific result, but only benchmarking the storage system.
 
@@ -98,9 +98,8 @@ since we do not care about producing a scientific result, but only benchmarking 
 
 ## Why these eight phases
 
-The score runs 8 of the 13 job files. Together they carry 89% of the bytes
-the reference workload moves. Each of the other five is left out for a
-clear reason:
+The suite distils to 8 job files. Together they carry 89% of the bytes
+the reference workload moves. Patterns that did not make the cut:
 
 - The **staging verify** step re-reads the file the ingest step just wrote.
   It would measure the same thing again.
@@ -111,14 +110,10 @@ clear reason:
 - The **image rewrite loop** repeats a small read and write. Its
   interesting part is the timing of the repeats, not the speed of the
   storage.
-- One job keeps a slow rate on purpose. The **viewer** phase models a
-  person browsing images, so it reads slowly by design and is judged on
-  how long a single read takes.
 
-The full catalog still exists. The capacity scenario runs all of it when
-you want the ceiling on every pattern. The scoring only covers the eight
-phases, because the other five have no measured reference to compare
-against.
+One kept job runs slowly on purpose. The **viewer** phase models a
+person browsing images, so it reads slowly by design and is judged on
+how long a single read takes.
 
 ## What makes the phases representative?
 
@@ -150,7 +145,7 @@ documents this per phase.
   load and no large memory footprint.
   Consequence: the benchmark's page cache is not disturbed by application memory the way
   the real workload's is. This is the main known divergence.
-- **Duration, in the fast modes.** We aim to produce a score within minutes,
+- **Duration.** We aim to produce a score within minutes,
   and purposefully avoid taking as long as the DSCs.
 - **Interleaving.** Phases run one after another, while real workflows overlap some steps.
 
@@ -160,13 +155,10 @@ Dependencies: bash, fio, python3, gettext (`envsubst`); coreutils
 `timeout` when using the `MAXTIME` watchdog.
 
 ```bash
-./run-scenario.sh score    <dir-on-storage-under-test>   # the measurement
-./run-scenario.sh capacity <dir>                         # same method, all phases
-./run-scenario.sh dsc-065  <dir> 1.0                    # ~3-4 h, replays the real run
-JOBS=8    ./run-scenario.sh score <dir>                 # multi-stream check
-UNCAPPED=0 RATE_MULT=1 ./run-scenario.sh score <dir>    # score phases at real rates
-PHASES=...                                               # run only some phases
-python3 score.py <run-dir>                                # metrics + score
+./run-scenario.sh score <dir-on-storage-under-test>   # the measurement
+JOBS=8   ./run-scenario.sh score <dir>                # multi-stream check
+PHASES=...                                            # run only some phases
+python3 score.py <run-dir>                            # metrics + score
 ```
 
 On a cluster: `deploy/` has ready-made Job YAMLs for three storage
@@ -177,37 +169,19 @@ the SRCNet nodes do not ship fio. Install it in your user space with
 the Job's TTL cleans the container up an hour after it finishes, so copy
 results out before that.
 
-Each mode answers a different question:
+The score answers one question:
 
 | Question it answers | Command | Wall time |
 |----------------------|---------|-----------|
 | How fast can this storage serve the DSC patterns? | `./run-scenario.sh score <dir>` | ~20 min on fast classes, up to ~1.5 h on slow ones (three pooled repetitions) |
-| Does the storage sustain the real demand rates on the eight key phases? | `UNCAPPED=0 RATE_MULT=1 ./run-scenario.sh score <dir>` | ~20 min–1.5 h |
-| Does the storage deliver the full recorded experience, structure and duration included? | `./run-scenario.sh dsc-065 <dir> 1.0` | hours |
-| What is the ceiling on every pattern, including the ones the score does not weigh? | `./run-scenario.sh capacity <dir>` | minutes |
 
-- **score** is the default measurement and what the report uses. It
-  removes the rate caps, so the storage does the best it can, and runs
-  each phase three times by default (`REPEATS=1` for quick iteration).
-  One job
-  keeps a slow rate on purpose, because the rate is part of what it
-  models: the interactive viewer (a person browsing reads slowly, its
-  metric is how long one read takes).
-- **paced score** runs the same eight phases at the real recorded demand
-  rates. It checks that the storage keeps up with the real tempo over a
-  sustained stretch. It cannot separate a storage that barely keeps up
-  from one with ten times the headroom, which is why the uncapped score
-  is the primary number and this is the check.
-- **replay** reproduces the rates, the structure and the duration of the
-  recorded runs: all patterns chained in pipeline order, several cycles
-  and idle gaps. Durations range from about 30
-  minutes for the small scenarios to about 20 hours for `dsc-065-deep`.
-  Use it to validate a storage against the measured traces, whose
-  reference numbers are in the report and in the provenance table inside
-  `score.py`. Do not use it to compare storage classes, because the rate
-  caps would hide the advantage of a faster storage.
-- **capacity** uses the same uncapped method as score but runs every
-  phase. Use it to probe patterns the score does not weigh.
+**score** is the measurement and what the report uses. It removes the
+rate caps, so the storage does the best it can, and runs each phase three
+times by default (`REPEATS=1` for quick iteration). One job
+keeps a slow rate on purpose, because the rate is part of what it
+models: the interactive viewer (a person browsing reads slowly, its
+metric is how long one read takes).
+
 ## Reading the results
 
 `python3 make_report.py` generates `reports/report.html`, a
@@ -257,24 +231,19 @@ manifests set it to 3600.
 
 | # | File | Pattern | Models | Key params |
 |---|------|---------|--------|------------|
-| 01 | `01-ms-tile-scan.fio` | MS column scan, ~16 KB syscalls, rate-limited | WSClean/DP3/casacore MS reads | COLA, COLB (two TSM column files), 81 metadata files |
 | 02 | `02-reorder-copy.fio` | Concurrent seq read + seq write of same size | wsclean `-reorder`, DDFacet `.ddfcache` | REORD (~0.5to1× data column) |
-| 03 | `03-major-cycle-rereads.fio` | N repeated full sequential passes | Cotton–Schwab major cycles (2 passes/cycle) | CYCLES (≈2× major iterations) |
+| 03 | `03-major-cycle-rereads.fio` | N repeated full sequential passes | Cotton–Schwab major cycles (2 passes/cycle) | CYCLES, JOBS |
 | 04 | `04-column-rmw.fio` | 1 GB-chunk interleaved column read + write | DP3 applybeam, Crystalball MODEL_DATA, casacore subtract (100k-row chunks) | REORD |
-| 04b | `04b-ms-copytree.fio` | Whole-MS copy | DSC-008 Step 5b copytree, DSC-035 `cp` chains | COLB |
-| 05 | `05-burst-read.fio` | 2 GB/s full-file RAM load | pyuvdata/hera_pspec/PSRCHIVE/PyBDSF whole-file loads | COLA+COLB (runner adds idle gap) |
-| 06 | `06-fits-image-chain.fio` | NIMG files read/written 8-way, per generation | blank→convolve→avg→cube chains, PyBDSF slice fan-out | NIMG_W, IMGSZ (runner runs 4 generations) |
-| 07 | `07-inject-rmw-loop.fio` | Read-modify-write × 10 on one image | source-injection loop | chains onto 06 products |
+| 06 | `06-fits-image-chain.fio` | NIMG files read/written 8-way, per generation | blank→convolve→avg→cube chains, PyBDSF slice fan-out | NIMG_W, IMGSZ (one generation) |
 | 08 | `08-carta-random-tiles.fio` | Random 256 KB reads, rate-limited, 4 sessions | CARTA interactive visualisation | 300 s fixed runtime |
-| 09/09b | `09-staging-ingest.fio` | 250 MB/s network-rate write. verify re-read | Rucio download + checksum | COLA |
+| 09 | `09-staging-ingest.fio` | 250 MB/s network-rate write | Rucio download | COLA |
 | 10 | `10-smallfile-monitor.fio` | PNG storm (2000×128 KB) + catalogues | per-source plots, catalogue writes | (n/a) |
 | 11 | `11-sparse-baseline-qa.fio` | Random 8 KB reads, <1% of volume | single-baseline TaQL QA, shadems | QA |
 
-Two modes per profile: **fidelity** (rate-limited to the measured
-per-process rates, looks like the real trace — the replay scenarios) and
-**capability** (the runner strips the caps; the capacity scenario raises
-them ×1000, measuring the storage ceiling). Job-file headers document
-both.
+The runner strips the `rate=` caps, so the storage does the best it can.
+The one exception is the phase where the rate is part of what is
+modelled: the interactive viewer (a person browsing reads slowly, judged
+on single-read latency). Job-file headers document the profiles.
 
 ## Reports
 
