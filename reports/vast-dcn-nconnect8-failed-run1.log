@@ -1,0 +1,28 @@
+debconf: delaying package configuration, since apt-utils is not installed
+fio-3.36
+envsubst (GNU gettext-runtime) 0.21
+Python 3.12.3
+=== SCALE=auto: node MemTotal 15991 MiB -> scale 0.164 (read set = 2x RAM)
+=== phase 00-ingest-write (10:43:38) -> 09-staging-ingest.fio
+=== phase 00-ingest-verify skipped (not in PHASES subset)
+=== phase 01-ms-tile-scan skipped (not in PHASES subset)
+=== phase 02-reorder (10:44:17) -> 02-reorder-copy.fio
+=== phase 03-major-cycles (10:45:37) -> 03-major-cycle-rereads.fio
+=== phase 04-column-rmw (10:46:38) -> 04-column-rmw.fio
+=== phase 04b-ms-copy skipped (not in PHASES subset)
+=== phase 05-burst-load skipped (not in PHASES subset)
+    (simulating CPU-bound processing with idle gap)
+=== phase 06-imagechain-gen1 (10:49:35) -> 06-fits-image-chain.fio
+fio: io_u error on file /data/bench/run-20261018-104338/imagechain-write.7.1: Disk quota exceeded: write offset=937426944, buflen=1048576
+fio: io_u error on file /data/bench/run-20261018-104338/imagechain-write.3.0: Disk quota exceeded: write offset=896532480, buflen=1048576
+fio: io_u error on file /data/bench/run-20261018-104338/imagechain-write.4.0: Disk quota exceeded: write offset=945815552, buflen=1048576
+fio: io_u error on file /data/bench/run-20261018-104338/imagechain-write.2.0: Disk quota exceeded: write offset=944766976, buflen=1048576
+fio: io_u error on file /data/bench/run-20261018-104338/imagechain-write.6.1: Disk quota exceeded: write offset=974127104, buflen=1048576
+    WARNING: phase 06-imagechain-gen1 rep 2 exceeded MAXTIME=3600s — killed, no results
+fio: output file open error: Disk quota exceeded
+    WARNING: phase 06-imagechain-gen1 rep 3 exceeded MAXTIME=3600s — killed, no results
+=== phase 06-imagechain-gen2 skipped (not in PHASES subset)
+=== phase 06-imagechain-gen3 skipped (not in PHASES subset)
+=== phase 06-imagechain-gen4 skipped (not in PHASES subset)
+=== phase 07-injection-loop skipped (not in PHASES subset)
+/opt/disco/run-scenario.sh: line 113: /data/bench/run-20261018-104338/08-carta-tiles.fio: Disk quota exceeded

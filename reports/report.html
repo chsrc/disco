@@ -53,7 +53,7 @@
   a { color:#7dd3fc; }
 </style></head><body><div class="wrap">
 <h1>disco — storage class comparison</h1>
-<div class="meta">generated 2026-10-15 17:01 · newest run per class ·
+<div class="meta">generated 2026-10-18 13:23 · newest run per class ·
 score scenario (8 phases, uncapped) ·
 <details style="margin-top:8px"><summary style="cursor:pointer">
 <b>What is the 1× reference?</b></summary>
@@ -123,53 +123,53 @@ read takes (lower is better).</p>
 <div class="cards">
         <div class="card">
           <h3 style="border-color:#0ea5e9">ceph-corbo-rbd-hdd</h3>
-          <div class="big">2.6<span class="unit">×</span></div>
+          <div class="big">4.0<span class="unit">×</span></div>
           <div class="sub">score — byte-weighted geometric mean of per-phase headroom</div>
-          <div class="row">I/O pressure <b>0.97</b> — I/O
+          <div class="row">I/O pressure <b>0.51</b> — I/O
           time as a share of the reference run's 4.6 h compute time</div>
-          <div class="row">I/O time (storage-bound) 4.5 h ·
-          composite 646 MB/s</div>
+          <div class="row">I/O time (storage-bound) 2.3 h ·
+          composite 673 MB/s</div>
           <div class="row">8/8 phases run</div>
           <div class="flag bad">⚠ 3 phase(s) below 1× demand</div>
-          <div class="row sub">weakest: 09-qa-sparse (0.1×)</div>
+          <div class="row sub">weakest: 09-qa-sparse (0.3×)</div>
         </div>
         <div class="card">
           <h3 style="border-color:#f59e0b">ceph-corbo-rbd-nvme</h3>
-          <div class="big">6.6<span class="unit">×</span></div>
+          <div class="big">5.8<span class="unit">×</span></div>
+          <div class="sub">score — byte-weighted geometric mean of per-phase headroom</div>
+          <div class="row">I/O pressure <b>0.31</b> — I/O
+          time as a share of the reference run's 4.6 h compute time</div>
+          <div class="row">I/O time (storage-bound) 1.4 h ·
+          composite 801 MB/s</div>
+          <div class="row">8/8 phases run</div>
+          <div class="flag good">✓ all phases ≥ 1× demand</div>
+          <div class="row sub">weakest: 09-qa-sparse (1.0×)</div>
+        </div>
+        <div class="card">
+          <h3 style="border-color:#8b5cf6">vast-dcn-nconnect8</h3>
+          <div class="big">9.2<span class="unit">×</span></div>
           <div class="sub">score — byte-weighted geometric mean of per-phase headroom</div>
           <div class="row">I/O pressure <b>0.21</b> — I/O
           time as a share of the reference run's 4.6 h compute time</div>
           <div class="row">I/O time (storage-bound) 1.0 h ·
-          composite 895 MB/s</div>
-          <div class="row">8/8 phases run</div>
-          <div class="flag good">✓ all phases ≥ 1× demand</div>
-          <div class="row sub">weakest: 09-qa-sparse (1.1×)</div>
-        </div>
-        <div class="card">
-          <h3 style="border-color:#8b5cf6">vast-dcn-nconnect8</h3>
-          <div class="big">9.7<span class="unit">×</span></div>
-          <div class="sub">score — byte-weighted geometric mean of per-phase headroom</div>
-          <div class="row">I/O pressure <b>0.14</b> — I/O
-          time as a share of the reference run's 4.6 h compute time</div>
-          <div class="row">I/O time (storage-bound) 0.6 h ·
-          composite 1,247 MB/s</div>
+          composite 1,166 MB/s</div>
           <div class="row">8/8 phases run</div>
           <div class="flag bad">⚠ 1 phase(s) below 1× demand</div>
-          <div class="row sub">weakest: 09-qa-sparse (0.9×)</div>
+          <div class="row sub">weakest: 09-qa-sparse (0.8×)</div>
         </div></div>
 <h2 class="comp">Bulk throughput (bytes-weighted composite, dsc-065 mix) — secondary metric: compensates tail failures, see cards above</h2>
 <div class="phase"><table>
 <tr><th style="width:22%">storage class</th><th style="width:34%"></th><th></th></tr>
 
         <tr><td class="lbl" style="color:#0ea5e9">ceph-corbo-rbd-hdd</td>
-            <td><div class="barwrap"><div class="bar" style="width:51.8%;background:#0ea5e9"></div></div></td>
-            <td class="num"><b>646</b> MB/s</td></tr>
+            <td><div class="barwrap"><div class="bar" style="width:57.7%;background:#0ea5e9"></div></div></td>
+            <td class="num"><b>673</b> MB/s</td></tr>
         <tr><td class="lbl" style="color:#f59e0b">ceph-corbo-rbd-nvme</td>
-            <td><div class="barwrap"><div class="bar" style="width:71.8%;background:#f59e0b"></div></div></td>
-            <td class="num"><b>895</b> MB/s</td></tr>
+            <td><div class="barwrap"><div class="bar" style="width:68.7%;background:#f59e0b"></div></div></td>
+            <td class="num"><b>801</b> MB/s</td></tr>
         <tr><td class="lbl" style="color:#8b5cf6">vast-dcn-nconnect8</td>
             <td><div class="barwrap"><div class="bar" style="width:100.0%;background:#8b5cf6"></div></div></td>
-            <td class="num"><b>1,247</b> MB/s</td></tr></table></div>
+            <td class="num"><b>1,166</b> MB/s</td></tr></table></div>
 
         <div class="phase">
           <h2>Staging ingest <span class="desc">— sequential write, network-rate analog</span><span class="wgt">14% of the I/O</span></h2>
@@ -178,28 +178,28 @@ read takes (lower is better).</p>
                 <th>throughput</th><th>IOPS</th><th>p99 ms</th><th>headroom</th></tr>
             
             <tr>
-              <td class="lbl" style="color:#0ea5e9">ceph-corbo-rbd-hdd</td>
-              <td><div class="barwrap"><div class="bar" style="width:96.5%;background:#0ea5e9"></div></div></td>
-              <td class="num"><b>1,395</b> MB/s</td>
-              <td class="num">21,284</td>
-              <td class="num">—</td>
-              <td><span class="badge good">5.6×</span></td>
-            </tr>
-            <tr>
-              <td class="lbl" style="color:#f59e0b">ceph-corbo-rbd-nvme</td>
-              <td><div class="barwrap"><div class="bar" style="width:95.1%;background:#f59e0b"></div></div></td>
-              <td class="num"><b>1,375</b> MB/s</td>
-              <td class="num">20,975</td>
+              <td class="lbl" style="color:#0ea5e9">ceph-corbo-rbd-hdd <span class="desc">(3 reps)</span></td>
+              <td><div class="barwrap"><div class="bar" style="width:100.0%;background:#0ea5e9"></div></div></td>
+              <td class="num"><b>1,384</b> MB/s</td>
+              <td class="num">21,113</td>
               <td class="num">—</td>
               <td><span class="badge good">5.5×</span></td>
             </tr>
             <tr>
-              <td class="lbl" style="color:#8b5cf6">vast-dcn-nconnect8</td>
-              <td><div class="barwrap"><div class="bar" style="width:100.0%;background:#8b5cf6"></div></div></td>
-              <td class="num"><b>1,445</b> MB/s</td>
-              <td class="num">22,046</td>
+              <td class="lbl" style="color:#f59e0b">ceph-corbo-rbd-nvme <span class="desc">(3 reps)</span></td>
+              <td><div class="barwrap"><div class="bar" style="width:91.1%;background:#f59e0b"></div></div></td>
+              <td class="num"><b>1,261</b> MB/s</td>
+              <td class="num">19,241</td>
               <td class="num">—</td>
-              <td><span class="badge good">5.8×</span></td>
+              <td><span class="badge good">5.0×</span></td>
+            </tr>
+            <tr>
+              <td class="lbl" style="color:#8b5cf6">vast-dcn-nconnect8 <span class="desc">(3 reps)</span></td>
+              <td><div class="barwrap"><div class="bar" style="width:97.6%;background:#8b5cf6"></div></div></td>
+              <td class="num"><b>1,350</b> MB/s</td>
+              <td class="num">20,598</td>
+              <td class="num">—</td>
+              <td><span class="badge good">5.4×</span></td>
             </tr>
           </table>
         </div>
@@ -210,26 +210,26 @@ read takes (lower is better).</p>
                 <th>throughput</th><th>IOPS</th><th>p99 ms</th><th>headroom</th></tr>
             
             <tr>
-              <td class="lbl" style="color:#0ea5e9">ceph-corbo-rbd-hdd</td>
-              <td><div class="barwrap"><div class="bar" style="width:14.6%;background:#0ea5e9"></div></div></td>
-              <td class="num"><b>261</b> MB/s</td>
-              <td class="num">790</td>
+              <td class="lbl" style="color:#0ea5e9">ceph-corbo-rbd-hdd <span class="desc">(3 reps)</span></td>
+              <td><div class="barwrap"><div class="bar" style="width:22.6%;background:#0ea5e9"></div></div></td>
+              <td class="num"><b>402</b> MB/s</td>
+              <td class="num">623</td>
               <td class="num">—</td>
-              <td><span class="badge bad">0.5×</span></td>
+              <td><span class="badge bad">0.8×</span></td>
             </tr>
             <tr>
-              <td class="lbl" style="color:#f59e0b">ceph-corbo-rbd-nvme</td>
-              <td><div class="barwrap"><div class="bar" style="width:58.2%;background:#f59e0b"></div></div></td>
-              <td class="num"><b>1,042</b> MB/s</td>
-              <td class="num">1,287</td>
+              <td class="lbl" style="color:#f59e0b">ceph-corbo-rbd-nvme <span class="desc">(3 reps)</span></td>
+              <td><div class="barwrap"><div class="bar" style="width:51.2%;background:#f59e0b"></div></div></td>
+              <td class="num"><b>909</b> MB/s</td>
+              <td class="num">1,100</td>
               <td class="num">—</td>
-              <td><span class="badge good">2.1×</span></td>
+              <td><span class="badge ok">1.8×</span></td>
             </tr>
             <tr>
-              <td class="lbl" style="color:#8b5cf6">vast-dcn-nconnect8</td>
+              <td class="lbl" style="color:#8b5cf6">vast-dcn-nconnect8 <span class="desc">(3 reps)</span></td>
               <td><div class="barwrap"><div class="bar" style="width:100.0%;background:#8b5cf6"></div></div></td>
-              <td class="num"><b>1,790</b> MB/s</td>
-              <td class="num">2,434</td>
+              <td class="num"><b>1,776</b> MB/s</td>
+              <td class="num">2,433</td>
               <td class="num">—</td>
               <td><span class="badge good">3.6×</span></td>
             </tr>
@@ -242,28 +242,28 @@ read takes (lower is better).</p>
                 <th>throughput</th><th>IOPS</th><th>p99 ms</th><th>headroom</th></tr>
             
             <tr>
-              <td class="lbl" style="color:#0ea5e9">ceph-corbo-rbd-hdd</td>
-              <td><div class="barwrap"><div class="bar" style="width:12.8%;background:#0ea5e9"></div></div></td>
-              <td class="num"><b>76</b> MB/s</td>
-              <td class="num">4,645</td>
+              <td class="lbl" style="color:#0ea5e9">ceph-corbo-rbd-hdd <span class="desc">(3 reps)</span></td>
+              <td><div class="barwrap"><div class="bar" style="width:30.3%;background:#0ea5e9"></div></div></td>
+              <td class="num"><b>175</b> MB/s</td>
+              <td class="num">10,658</td>
               <td class="num">—</td>
-              <td><span class="badge ok">1.2×</span></td>
+              <td><span class="badge good">2.8×</span></td>
             </tr>
             <tr>
-              <td class="lbl" style="color:#f59e0b">ceph-corbo-rbd-nvme</td>
-              <td><div class="barwrap"><div class="bar" style="width:58.1%;background:#f59e0b"></div></div></td>
-              <td class="num"><b>345</b> MB/s</td>
-              <td class="num">21,078</td>
+              <td class="lbl" style="color:#f59e0b">ceph-corbo-rbd-nvme <span class="desc">(3 reps)</span></td>
+              <td><div class="barwrap"><div class="bar" style="width:52.8%;background:#f59e0b"></div></div></td>
+              <td class="num"><b>304</b> MB/s</td>
+              <td class="num">18,571</td>
               <td class="num">—</td>
-              <td><span class="badge good">5.5×</span></td>
+              <td><span class="badge good">4.9×</span></td>
             </tr>
             <tr>
-              <td class="lbl" style="color:#8b5cf6">vast-dcn-nconnect8</td>
+              <td class="lbl" style="color:#8b5cf6">vast-dcn-nconnect8 <span class="desc">(3 reps)</span></td>
               <td><div class="barwrap"><div class="bar" style="width:100.0%;background:#8b5cf6"></div></div></td>
-              <td class="num"><b>594</b> MB/s</td>
-              <td class="num">36,284</td>
+              <td class="num"><b>576</b> MB/s</td>
+              <td class="num">35,175</td>
               <td class="num">—</td>
-              <td><span class="badge good">9.5×</span></td>
+              <td><span class="badge good">9.2×</span></td>
             </tr>
           </table>
         </div>
@@ -274,28 +274,28 @@ read takes (lower is better).</p>
                 <th>throughput</th><th>IOPS</th><th>p99 ms</th><th>headroom</th></tr>
             
             <tr>
-              <td class="lbl" style="color:#0ea5e9">ceph-corbo-rbd-hdd</td>
-              <td><div class="barwrap"><div class="bar" style="width:22.7%;background:#0ea5e9"></div></div></td>
-              <td class="num"><b>338</b> MB/s</td>
+              <td class="lbl" style="color:#0ea5e9">ceph-corbo-rbd-hdd <span class="desc">(3 reps)</span></td>
+              <td><div class="barwrap"><div class="bar" style="width:39.1%;background:#0ea5e9"></div></div></td>
+              <td class="num"><b>598</b> MB/s</td>
               <td class="num">1</td>
               <td class="num">—</td>
-              <td><span class="badge bad">0.4×</span></td>
+              <td><span class="badge bad">0.8×</span></td>
             </tr>
             <tr>
-              <td class="lbl" style="color:#f59e0b">ceph-corbo-rbd-nvme</td>
-              <td><div class="barwrap"><div class="bar" style="width:69.8%;background:#f59e0b"></div></div></td>
-              <td class="num"><b>1,039</b> MB/s</td>
+              <td class="lbl" style="color:#f59e0b">ceph-corbo-rbd-nvme <span class="desc">(3 reps)</span></td>
+              <td><div class="barwrap"><div class="bar" style="width:65.0%;background:#f59e0b"></div></div></td>
+              <td class="num"><b>992</b> MB/s</td>
               <td class="num">1</td>
               <td class="num">—</td>
               <td><span class="badge ok">1.3×</span></td>
             </tr>
             <tr>
-              <td class="lbl" style="color:#8b5cf6">vast-dcn-nconnect8</td>
+              <td class="lbl" style="color:#8b5cf6">vast-dcn-nconnect8 <span class="desc">(3 reps)</span></td>
               <td><div class="barwrap"><div class="bar" style="width:100.0%;background:#8b5cf6"></div></div></td>
-              <td class="num"><b>1,489</b> MB/s</td>
+              <td class="num"><b>1,527</b> MB/s</td>
               <td class="num">2</td>
               <td class="num">—</td>
-              <td><span class="badge ok">1.9×</span></td>
+              <td><span class="badge ok">2.0×</span></td>
             </tr>
           </table>
         </div>
@@ -306,28 +306,28 @@ read takes (lower is better).</p>
                 <th>throughput</th><th>IOPS</th><th>p99 ms</th><th>headroom</th></tr>
             
             <tr>
-              <td class="lbl" style="color:#0ea5e9">ceph-corbo-rbd-hdd</td>
-              <td><div class="barwrap"><div class="bar" style="width:58.8%;background:#0ea5e9"></div></div></td>
-              <td class="num"><b>1,445</b> MB/s</td>
-              <td class="num">1,826</td>
+              <td class="lbl" style="color:#0ea5e9">ceph-corbo-rbd-hdd <span class="desc">(3 reps)</span></td>
+              <td><div class="barwrap"><div class="bar" style="width:64.9%;background:#0ea5e9"></div></div></td>
+              <td class="num"><b>1,452</b> MB/s</td>
+              <td class="num">2,014</td>
               <td class="num">—</td>
-              <td><span class="badge good">14.4×</span></td>
+              <td><span class="badge good">14.5×</span></td>
             </tr>
             <tr>
-              <td class="lbl" style="color:#f59e0b">ceph-corbo-rbd-nvme</td>
-              <td><div class="barwrap"><div class="bar" style="width:65.8%;background:#f59e0b"></div></div></td>
-              <td class="num"><b>1,617</b> MB/s</td>
-              <td class="num">2,102</td>
+              <td class="lbl" style="color:#f59e0b">ceph-corbo-rbd-nvme <span class="desc">(3 reps)</span></td>
+              <td><div class="barwrap"><div class="bar" style="width:72.1%;background:#f59e0b"></div></div></td>
+              <td class="num"><b>1,614</b> MB/s</td>
+              <td class="num">2,054</td>
               <td class="num">—</td>
-              <td><span class="badge good">16.2×</span></td>
+              <td><span class="badge good">16.1×</span></td>
             </tr>
             <tr>
-              <td class="lbl" style="color:#8b5cf6">vast-dcn-nconnect8</td>
+              <td class="lbl" style="color:#8b5cf6">vast-dcn-nconnect8 <span class="desc">(3 reps)</span></td>
               <td><div class="barwrap"><div class="bar" style="width:100.0%;background:#8b5cf6"></div></div></td>
-              <td class="num"><b>2,457</b> MB/s</td>
-              <td class="num">3,400</td>
+              <td class="num"><b>2,238</b> MB/s</td>
+              <td class="num">3,014</td>
               <td class="num">—</td>
-              <td><span class="badge good">24.6×</span></td>
+              <td><span class="badge good">22.4×</span></td>
             </tr>
           </table>
         </div>
@@ -338,28 +338,28 @@ read takes (lower is better).</p>
                 <th>throughput</th><th>IOPS</th><th>p99 ms</th><th>headroom</th></tr>
             
             <tr>
-              <td class="lbl" style="color:#0ea5e9">ceph-corbo-rbd-hdd</td>
-              <td><div class="barwrap"><div class="bar" style="width:16.2%;background:#0ea5e9"></div></div></td>
-              <td class="num"><b>68</b> MB/s</td>
-              <td class="num">259</td>
-              <td class="num"><span class="badge bad">85.5 ms</span></td>
-              <td><span class="badge good">16.9×</span></td>
+              <td class="lbl" style="color:#0ea5e9">ceph-corbo-rbd-hdd <span class="desc">(3 reps)</span></td>
+              <td><div class="barwrap"><div class="bar" style="width:100.0%;background:#0ea5e9"></div></div></td>
+              <td class="num"><b>17</b> MB/s</td>
+              <td class="num">64</td>
+              <td class="num"><span class="badge bad">79.2 ms</span></td>
+              <td><span class="badge good">4.2×</span></td>
             </tr>
             <tr>
-              <td class="lbl" style="color:#f59e0b">ceph-corbo-rbd-nvme</td>
+              <td class="lbl" style="color:#f59e0b">ceph-corbo-rbd-nvme <span class="desc">(3 reps)</span></td>
               <td><div class="barwrap"><div class="bar" style="width:100.0%;background:#f59e0b"></div></div></td>
-              <td class="num"><b>419</b> MB/s</td>
-              <td class="num">1,600</td>
-              <td class="num"><span class="badge good">4.8 ms</span></td>
-              <td><span class="badge good">104.9×</span></td>
+              <td class="num"><b>17</b> MB/s</td>
+              <td class="num">64</td>
+              <td class="num"><span class="badge ok">12.1 ms</span></td>
+              <td><span class="badge good">4.2×</span></td>
             </tr>
             <tr>
-              <td class="lbl" style="color:#8b5cf6">vast-dcn-nconnect8</td>
+              <td class="lbl" style="color:#8b5cf6">vast-dcn-nconnect8 <span class="desc">(3 reps)</span></td>
               <td><div class="barwrap"><div class="bar" style="width:100.0%;background:#8b5cf6"></div></div></td>
-              <td class="num"><b>419</b> MB/s</td>
-              <td class="num">1,600</td>
-              <td class="num"><span class="badge good">5.1 ms</span></td>
-              <td><span class="badge good">104.9×</span></td>
+              <td class="num"><b>17</b> MB/s</td>
+              <td class="num">64</td>
+              <td class="num"><span class="badge good">5.9 ms</span></td>
+              <td><span class="badge good">4.2×</span></td>
             </tr>
           </table>
         </div>
@@ -370,28 +370,28 @@ read takes (lower is better).</p>
                 <th>throughput</th><th>IOPS</th><th>p99 ms</th><th>headroom</th></tr>
             
             <tr>
-              <td class="lbl" style="color:#0ea5e9">ceph-corbo-rbd-hdd</td>
-              <td><div class="barwrap"><div class="bar" style="width:8.0%;background:#0ea5e9"></div></div></td>
-              <td class="num"><b>1</b> MB/s</td>
-              <td class="num">109</td>
-              <td class="num"><span class="badge bad">82.3 ms</span></td>
-              <td><span class="badge bad">0.1×</span></td>
+              <td class="lbl" style="color:#0ea5e9">ceph-corbo-rbd-hdd <span class="desc">(3 reps)</span></td>
+              <td><div class="barwrap"><div class="bar" style="width:26.5%;background:#0ea5e9"></div></div></td>
+              <td class="num"><b>3</b> MB/s</td>
+              <td class="num">332</td>
+              <td class="num"><span class="badge ok">45.4 ms</span></td>
+              <td><span class="badge bad">0.3×</span></td>
             </tr>
             <tr>
-              <td class="lbl" style="color:#f59e0b">ceph-corbo-rbd-nvme</td>
+              <td class="lbl" style="color:#f59e0b">ceph-corbo-rbd-nvme <span class="desc">(3 reps)</span></td>
               <td><div class="barwrap"><div class="bar" style="width:100.0%;background:#f59e0b"></div></div></td>
-              <td class="num"><b>11</b> MB/s</td>
-              <td class="num">1,352</td>
-              <td class="num"><span class="badge good">3.6 ms</span></td>
-              <td><span class="badge ok">1.1×</span></td>
+              <td class="num"><b>10</b> MB/s</td>
+              <td class="num">1,254</td>
+              <td class="num"><span class="badge good">4.6 ms</span></td>
+              <td><span class="badge ok">1.0×</span></td>
             </tr>
             <tr>
-              <td class="lbl" style="color:#8b5cf6">vast-dcn-nconnect8</td>
-              <td><div class="barwrap"><div class="bar" style="width:83.5%;background:#8b5cf6"></div></div></td>
-              <td class="num"><b>9</b> MB/s</td>
-              <td class="num">1,129</td>
-              <td class="num"><span class="badge good">2.2 ms</span></td>
-              <td><span class="badge bad">0.9×</span></td>
+              <td class="lbl" style="color:#8b5cf6">vast-dcn-nconnect8 <span class="desc">(3 reps)</span></td>
+              <td><div class="barwrap"><div class="bar" style="width:78.0%;background:#8b5cf6"></div></div></td>
+              <td class="num"><b>8</b> MB/s</td>
+              <td class="num">979</td>
+              <td class="num"><span class="badge good">3.2 ms</span></td>
+              <td><span class="badge bad">0.8×</span></td>
             </tr>
           </table>
         </div>
@@ -402,32 +402,32 @@ read takes (lower is better).</p>
                 <th>throughput</th><th>IOPS</th><th>p99 ms</th><th>headroom</th></tr>
             
             <tr>
-              <td class="lbl" style="color:#0ea5e9">ceph-corbo-rbd-hdd</td>
-              <td><div class="barwrap"><div class="bar" style="width:97.3%;background:#0ea5e9"></div></div></td>
-              <td class="num"><b>3,248</b> MB/s</td>
-              <td class="num">28,950</td>
+              <td class="lbl" style="color:#0ea5e9">ceph-corbo-rbd-hdd <span class="desc">(3 reps)</span></td>
+              <td><div class="barwrap"><div class="bar" style="width:22.7%;background:#0ea5e9"></div></div></td>
+              <td class="num"><b>96</b> MB/s</td>
+              <td class="num">807</td>
               <td class="num">—</td>
-              <td><span class="badge good">649.7×</span></td>
+              <td><span class="badge good">19.2×</span></td>
             </tr>
             <tr>
-              <td class="lbl" style="color:#f59e0b">ceph-corbo-rbd-nvme</td>
-              <td><div class="barwrap"><div class="bar" style="width:100.0%;background:#f59e0b"></div></div></td>
-              <td class="num"><b>3,339</b> MB/s</td>
-              <td class="num">27,594</td>
+              <td class="lbl" style="color:#f59e0b">ceph-corbo-rbd-nvme <span class="desc">(3 reps)</span></td>
+              <td><div class="barwrap"><div class="bar" style="width:53.9%;background:#f59e0b"></div></div></td>
+              <td class="num"><b>228</b> MB/s</td>
+              <td class="num">2,095</td>
               <td class="num">—</td>
-              <td><span class="badge good">667.8×</span></td>
+              <td><span class="badge good">45.6×</span></td>
             </tr>
             <tr>
-              <td class="lbl" style="color:#8b5cf6">vast-dcn-nconnect8</td>
-              <td><div class="barwrap"><div class="bar" style="width:9.5%;background:#8b5cf6"></div></div></td>
-              <td class="num"><b>316</b> MB/s</td>
-              <td class="num">3,527</td>
+              <td class="lbl" style="color:#8b5cf6">vast-dcn-nconnect8 <span class="desc">(3 reps)</span></td>
+              <td><div class="barwrap"><div class="bar" style="width:100.0%;background:#8b5cf6"></div></div></td>
+              <td class="num"><b>423</b> MB/s</td>
+              <td class="num">4,044</td>
               <td class="num">—</td>
-              <td><span class="badge good">63.3×</span></td>
+              <td><span class="badge good">84.6×</span></td>
             </tr>
           </table>
         </div>
-<div class="phase"><h2>Insights</h2><ul><li><b style="color:#0ea5e9">ceph-corbo-rbd-hdd</b>: 3 phase(s) below 1× demand — worst <b>09-qa-sparse</b> at <b>0.09×</b> (real DSC would run slower than the SWE-SRC reference in that phase).</li><li><b style="color:#8b5cf6">vast-dcn-nconnect8</b>: 1 phase(s) below 1× demand — worst <b>09-qa-sparse</b> at <b>0.92×</b> (real DSC would run slower than the SWE-SRC reference in that phase).</li><li>largest divergence: <b>09-qa-sparse</b> — <b style="color:#f59e0b">ceph-corbo-rbd-nvme</b> is <b>12×</b> faster than <b style="color:#0ea5e9">ceph-corbo-rbd-hdd</b> (11 vs 1 MB/s).</li><li>largest divergence: <b>10-smallfiles</b> — <b style="color:#f59e0b">ceph-corbo-rbd-nvme</b> is <b>11×</b> faster than <b style="color:#8b5cf6">vast-dcn-nconnect8</b> (3,339 vs 316 MB/s).</li><li>read-latency tails (p99): <b style="color:#0ea5e9">ceph-corbo-rbd-hdd</b>: 08-carta-tiles 85.5 ms, 09-qa-sparse 82.3 ms; <b style="color:#f59e0b">ceph-corbo-rbd-nvme</b>: 08-carta-tiles 4.8 ms, 09-qa-sparse 3.6 ms; <b style="color:#8b5cf6">vast-dcn-nconnect8</b>: 08-carta-tiles 5.1 ms, 09-qa-sparse 2.2 ms.</li></ul></div>
+<div class="phase"><h2>Insights</h2><ul><li><b style="color:#0ea5e9">ceph-corbo-rbd-hdd</b>: 3 phase(s) below 1× demand — worst <b>09-qa-sparse</b> at <b>0.27×</b> (real DSC would run slower than the SWE-SRC reference in that phase).</li><li><b style="color:#8b5cf6">vast-dcn-nconnect8</b>: 1 phase(s) below 1× demand — worst <b>09-qa-sparse</b> at <b>0.80×</b> (real DSC would run slower than the SWE-SRC reference in that phase).</li><li>largest divergence: <b>02-reorder</b> — <b style="color:#8b5cf6">vast-dcn-nconnect8</b> is <b>4×</b> faster than <b style="color:#0ea5e9">ceph-corbo-rbd-hdd</b> (1,776 vs 402 MB/s).</li><li>largest divergence: <b>10-smallfiles</b> — <b style="color:#8b5cf6">vast-dcn-nconnect8</b> is <b>4×</b> faster than <b style="color:#0ea5e9">ceph-corbo-rbd-hdd</b> (423 vs 96 MB/s).</li><li>read-latency tails (p99): <b style="color:#0ea5e9">ceph-corbo-rbd-hdd</b>: 08-carta-tiles 79.2 ms, 09-qa-sparse 45.4 ms; <b style="color:#f59e0b">ceph-corbo-rbd-nvme</b>: 08-carta-tiles 12.1 ms, 09-qa-sparse 4.6 ms; <b style="color:#8b5cf6">vast-dcn-nconnect8</b>: 08-carta-tiles 5.9 ms, 09-qa-sparse 3.2 ms.</li></ul></div>
 <div class="phase"><details><summary style="cursor:pointer;font-size:16px">
 <b>Where does everything come from?</b></summary>
 <table class="src">

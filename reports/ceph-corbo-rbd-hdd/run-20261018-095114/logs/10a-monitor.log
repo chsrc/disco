@@ -1,0 +1,39 @@
+psrecord-log: (g=0): rw=write, bs=(R) 256B-256B, (W) 256B-256B, (T) 256B-256B, ioengine=psync, iodepth=1
+fio-3.36
+Starting 1 process
+psrecord-log: Laying out IO file (1 file / 0MiB)
+
+fio: terminating on signal 15
+
+fio: terminating on signal 15
+fio: select() call in helper thread failed: Interrupted system call
+psrecord-log: (groupid=0, jobs=1): err= 0: pid=745: Sun Oct 18 10:40:57 2026
+  Description  : [Periodic tiny writes for the whole scenario duration]
+  write: IOPS=7, BW=2047B/s (2047B/s)(5967KiB/2983501msec); 0 zone resets
+    clat (nsec): min=720, max=595994k, avg=454688.02, stdev=7168900.63
+     lat (nsec): min=770, max=595996k, avg=456077.28, stdev=7168912.26
+    clat percentiles (usec):
+     |  1.00th=[    12],  5.00th=[    16], 10.00th=[    18], 20.00th=[    20],
+     | 30.00th=[    21], 40.00th=[    23], 50.00th=[    24], 60.00th=[    25],
+     | 70.00th=[    27], 80.00th=[    29], 90.00th=[    33], 95.00th=[    58],
+     | 99.00th=[  7177], 99.50th=[ 17957], 99.90th=[ 80217], 99.95th=[166724],
+     | 99.99th=[274727]
+   bw (  KiB/s): min=    0, max=    3, per=50.02%, avg= 1.99, stdev= 0.13, samples=5965
+   iops        : min=    2, max=   14, avg= 7.99, stdev= 0.25, samples=5965
+  lat (nsec)   : 750=0.01%, 1000=0.01%
+  lat (usec)   : 2=0.01%, 10=0.54%, 20=24.86%, 50=69.23%, 100=0.90%
+  lat (usec)   : 250=0.21%, 500=0.03%, 750=0.07%, 1000=1.30%
+  lat (msec)   : 2=1.09%, 4=0.47%, 10=0.43%, 20=0.40%, 50=0.28%
+  lat (msec)   : 100=0.08%, 250=0.05%, 500=0.02%, 750=0.01%
+  cpu          : usr=0.02%, sys=0.04%, ctx=25050, majf=0, minf=15
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued rwts: total=0,23868,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=1
+
+Run status group 0 (all jobs):
+  WRITE: bw=2047B/s (2047B/s), 2047B/s-2047B/s (2047B/s-2047B/s), io=5967KiB (6110kB), run=2983501-2983501msec
+
+Disk stats (read/write):
+  rbd3: ios=709131/64722, sectors=435161248/415515824, merge=4964/19244, ticks=3823115/6171169, in_queue=9994284, util=79.67%

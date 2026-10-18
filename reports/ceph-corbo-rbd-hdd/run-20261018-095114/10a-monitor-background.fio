@@ -1,0 +1,21 @@
+# P10a — Background monitoring I/O load (runs CONCURRENTLY with all other phases)
+#
+# What it models: every monitored DSC step writes a psrecord log line every
+# 0.1-1 s for the entire run duration (multi-hour runs -> ~1e5 tiny writes),
+# plus tqdm progress lines on stderr. This job MODELS that traffic as part of
+# the synthetic load (10 Hz small writes) — it is load generation, not
+# measurement; results are measured by fio itself. The runner starts it in
+# the background and kills it at scenario end.
+
+[psrecord-log]
+description=Periodic tiny writes for the whole scenario duration
+directory=/data/bench/run-20261018-095114
+filename=monitor_log.txt
+size=64k
+rw=write
+ioengine=psync
+bs=256
+rate=2k
+runtime=86400
+time_based=1
+iodepth=1

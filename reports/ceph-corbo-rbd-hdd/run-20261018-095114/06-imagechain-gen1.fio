@@ -1,0 +1,32 @@
+# P6 — FITS image chain (blank -> convolve -> average -> cube; PyBDSF slice fan-out)
+#
+# What it models: the post-imaging transform chains. DSC-065: 40 x 1.07 GB
+# channel images read and rewritten through ~4-6 generations (blanked,
+# convolved, averaged, cubed) with an 8-process fan-out; DSC-007: 400 x 17 MB
+# channel images -> 6.7 GB cube; DSC-043: 4001 channel images -> 262 GB cubes.
+# PyBDSF contributes 5 aux images + 2 catalogues per processed slice.
+#
+# The runner executes this profile once per generation (4x default).
+# 8 parallel workers each process 2 files, so the total file count
+# is NIMG_W x 8 (runner sets NIMG_W = NIMG / 8) — mirroring the documented
+# "do not try more than 8 processes" cap with per-worker file distribution.
+
+[imagechain-read]
+description=Read image generation N (8 workers x NIMG_W files of IMGSZ each)
+directory=/data/bench/run-20261018-095114
+nrfiles=2
+filesize=1G
+rw=read
+ioengine=psync
+bs=1m
+numjobs=8
+
+[imagechain-write]
+description=Write image generation N+1 (new files, same total mass)
+directory=/data/bench/run-20261018-095114
+nrfiles=2
+filesize=1G
+rw=write
+ioengine=psync
+bs=1m
+numjobs=8

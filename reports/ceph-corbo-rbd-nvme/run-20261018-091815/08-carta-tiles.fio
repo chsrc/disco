@@ -1,0 +1,26 @@
+# P8 — Interactive visualisation (CARTA backend random tile reads)
+#
+# What it models: CARTA sessions on the nodes: per-channel rendering with
+# 256x256-pixel tiles (TILE_SIZE=256) read through a 512x512 chunk loader
+# (CHUNK_SIZE=512), LRU tile cache of 4096 tiles, driven by user zoom/scroll
+# -> random small reads, latency-sensitive, sustained low rate for the session
+# duration. 4 concurrent sessions is a reasonable multi-user default.
+#
+# Measured anchor: CARTA backend animation session ran 3113 s at ~3% CPU,
+# 178 MB RAM — i.e. near-idle background random traffic.
+
+[carta-tiles]
+description=Random 256k tile reads, latency-bound (4 concurrent sessions)
+directory=/data/bench/run-20261018-091815
+filename=ms_col_a.bin
+filesize=15G
+rw=randread
+ioengine=psync
+bs=256k
+rate=4m
+runtime=300
+time_based=1
+iodepth=1
+numjobs=4
+group_reporting=1
+lat_percentiles=1

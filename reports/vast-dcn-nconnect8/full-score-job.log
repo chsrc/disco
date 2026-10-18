@@ -2,41 +2,45 @@ debconf: delaying package configuration, since apt-utils is not installed
 fio-3.36
 envsubst (GNU gettext-runtime) 0.21
 Python 3.12.3
-=== phase 00-ingest-write (10:47:31) -> 09-staging-ingest.fio
+=== SCALE=auto: node MemTotal 15991 MiB -> scale 0.164 (read set = 2x RAM)
+=== phase 00-ingest-write (10:52:38) -> 09-staging-ingest.fio
 === phase 00-ingest-verify skipped (not in PHASES subset)
 === phase 01-ms-tile-scan skipped (not in PHASES subset)
-=== phase 02-reorder (10:48:43) -> 02-reorder-copy.fio
-=== phase 03-major-cycles (10:53:00) -> 03-major-cycle-rereads.fio
-=== phase 04-column-rmw (10:55:10) -> 04-column-rmw.fio
+=== phase 02-reorder (10:53:15) -> 02-reorder-copy.fio
+=== phase 03-major-cycles (10:54:35) -> 03-major-cycle-rereads.fio
+=== phase 04-column-rmw (10:55:38) -> 04-column-rmw.fio
 === phase 04b-ms-copy skipped (not in PHASES subset)
 === phase 05-burst-load skipped (not in PHASES subset)
     (simulating CPU-bound processing with idle gap)
-=== phase 06-imagechain-gen1 (10:59:12) -> 06-fits-image-chain.fio
+=== phase 06-imagechain-gen1 (10:58:33) -> 06-fits-image-chain.fio
 === phase 06-imagechain-gen2 skipped (not in PHASES subset)
 === phase 06-imagechain-gen3 skipped (not in PHASES subset)
 === phase 06-imagechain-gen4 skipped (not in PHASES subset)
 === phase 07-injection-loop skipped (not in PHASES subset)
-=== phase 08-carta-tiles (10:59:42) -> 08-carta-random-tiles.fio
-=== phase 09-qa-sparse (11:04:42) -> 11-sparse-baseline-qa.fio
-=== phase 10-smallfiles (11:08:34) -> 10-smallfile-monitor.fio
-=== scenario score complete; results in /data/bench/run-20261014-104730
-per-phase fio JSON: /data/bench/run-20261014-104730/logs/<phase>.json
-=== run dir: /data/bench/run-20261014-104730
+=== phase 08-carta-tiles (10:59:36) -> 08-carta-random-tiles.fio
+=== phase 09-qa-sparse (11:14:37) -> 11-sparse-baseline-qa.fio
+=== phase 10-smallfiles (11:21:19) -> 10-smallfile-monitor.fio
+=== scenario score complete; results in /data/bench/run-20261018-105238
+per-phase fio JSON: /data/bench/run-20261018-105238/logs/<phase>.json
+=== run dir: /data/bench/run-20261018-105238
 phase               GB moved    throughput      IOPS   p99 ms  headroom
 -----------------------------------------------------------------------
 (headroom = measured capability / SWE-SRC reference-run rate;
  the reference was partly I/O-bound, so headroom > 1x means your
- storage beats the reference experience — see report §7b)
+ storage beats the reference experience; provenance: DEMAND_SOURCES)
 -----------------------------------------------------------------------
-00-ingest-write       103.08        1445 M/s     22046      0.0      5.8x
-02-reorder            231.93        1790 M/s      2434      0.0      3.6x
-03-major-cycles        77.31         594 M/s     36284      0.0      7.4x
-04-column-rmw         180.39        1489 M/s         2      0.0      3.0x
-06-imagechain-gen1     34.36        2457 M/s      3400      0.0     24.6x
-08-carta-tiles        125.83         419 M/s      1600      5.1    104.9x
-09-qa-sparse            2.15           9 M/s      1129      2.2      0.9x
-10-smallfiles           0.60         316 M/s      3527      0.0     63.3x
+00-ingest-write        48.32        1350 M/s     20598      0.0      5.4x
+02-reorder            106.30        1776 M/s      2433      0.0      3.6x
+03-major-cycles        35.43         576 M/s     35175      0.0      9.2x
+04-column-rmw          83.75        1527 M/s         2      0.0      2.0x
+06-imagechain-gen1    103.08        2238 M/s      3014      0.0     22.4x
+08-carta-tiles         15.10          17 M/s        64      5.9      4.2x
+09-qa-sparse            3.22           8 M/s       979      3.2      0.8x
+10-smallfiles           1.79         423 M/s      4044      0.0     84.6x
 -----------------------------------------------------------------------
-bytes-weighted composite throughput: 1247 MB/s (weights: dsc-065 measured trace)
-predicted full-run wall time (storage-bound, dsc-065): 0.6 h
+(3 repetitions per phase, pooled)
+score (byte-weighted geomean headroom): 9.2x  (capability phases, carta excluded, byte-weighted)
+bytes-weighted composite throughput: 1166 MB/s (weights: dsc-065 measured trace)
+predicted full-run wall time (storage-bound, dsc-065): 1.0 h
+I/O pressure: 0.21 (I/O time as a share of the 4.6 h compute time of the reference run; <1 means storage keeps up)
 NOTE: the real run took 4.6 h compute-bound; if storage keeps up (all headroom > 1x), expect ~the real duration, not this bound.
