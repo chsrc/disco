@@ -205,7 +205,6 @@ Each mode answers a different question:
   caps would hide the advantage of a faster storage.
 - **capacity** uses the same uncapped method as score but runs every
   phase. Use it to probe patterns the score does not weigh.
-
 ## Reading the results
 
 `python3 make_report.py` generates `reports/report.html`, a
@@ -234,9 +233,12 @@ single-stream and multi-stream on parallel-friendly filesystems.
 
 `PHASES="a b c"` runs only the named phases.
 
-`scale` (the third argument) shrinks the working set for quick tests. The
-default `score` working set is about 190 GB, so on nodes with more than
-95 GB of RAM, raise the scale (see the caveat below for why).
+`scale` (the third argument) is omitted by default: the read working set
+is sized to 2× the node's RAM automatically — read from `/proc/meminfo`,
+floored at 0.15 — so the benchmark is always cold-cache without manual
+guessing. On the 16 GiB gornergrat nodes that resolves to ~0.16 (a
+~30 GB set). Pass `full` for the real dataset sizes (1.0), or a number
+for that fraction of the full DSC size.
 
 ## Profiles (profiles/*.fio)
 

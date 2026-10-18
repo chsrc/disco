@@ -7,7 +7,9 @@
 #   scenario: dsc-065 | dsc-065-raw | dsc-065-deep | dsc-008 | dsc-007 | dsc-037 |
 #             dsc-043 | dsc-035 | dsc-053 | score | capacity
 #   workdir:  directory on the storage under test (default: ./disco-data)
-#   scale:    fractional data scale, 1.0 = full DSC size, 0.01 = 1% (default 1.0)
+#   scale:    omitted (default) = read working set of 2x the node's RAM — the
+#             minimum for cold-cache readings; "full" = 1.0 (real dataset
+#             sizes); a number = that fraction of the full DSC size
 #
 # Env vars:
 #   UNCAPPED=0/1     1 = strip the rate= caps for a capability measurement
@@ -29,13 +31,19 @@
 #                   latency tail. Note: back-to-back repetitions capture
 #                   short-term variance only. For time-of-day variance,
 #                   repeat whole runs spread over a day.
+#   MAXTIME=SECONDS  per-phase watchdog (default 0 = off). Phases stay
+#                   size-based and stop on their own when the workload is
+#                   done; one that exceeds MAXTIME is killed and reported
+#                   instead of hanging the whole run for hours. A guard, not
+#                   a measurement method: a healthy phase is never affected.
 #
 # Per-phase results are written as fio JSON to <run>/logs/<phase>.json.
 set -euo pipefail
 
 SCENARIO=${1:?scenario required}
 WORKDIR=${2:-./disco-data}
-SCALE=${3:-1}
+SCALE=${3:-auto}
+if [ "$SCALE" = "full" ]; then SCALE=1; fi
 HERE="$(cd "$(dirname "$0")" && pwd)"
 PROFILES="$HERE/profiles"
 RUN="$WORKDIR/run-$(date +%Y%m%d-%H%M%S)"
@@ -93,10 +101,35 @@ phase() {
   local rendered="$RUN/${name}.fio"
   render "$PROFILES/$job" > "$rendered"
   echo "=== phase $name ($(date +%T)) -> $job"
+  local rep out
   for rep in $(seq 1 "${REPEATS:-1}"); do
-    fio "$rendered" --output-format=json --output="$RUN/logs/${name}-${rep}.json"
+    out="$RUN/logs/${name}-${rep}.json"
+    if [ "${MAXTIME:-0}" != "0" ]; then
+      if ! timeout "$MAXTIME" fio "$rendered" --output-format=json --output="$out"; then
+        echo "    WARNING: phase $name rep $rep exceeded MAXTIME=${MAXTIME}s — killed, no results" >&2
+        rm -f "$out"
+      fi
+    else
+      fio "$rendered" --output-format=json --output="$out"
+    fi
   done
 }
+
+# SCALE=auto (score/capacity): target a read working set of 2x
+# node RAM — the minimum for cold-cache readings (see README). Reads host
+# MemTotal from /proc/meminfo, so it works in a tenant pod without host knob
+# access; no drop_caches/O_DIRECT needed. Other scenarios: pass a number.
+if [ "$SCALE" = "auto" ]; then
+  case $SCENARIO in
+    score) FULL_READ_GIB=190 ;;   # ~96+48+72 GiB files + image/QA
+    capacity)          FULL_READ_GIB=300 ;;   # ~100+100+100 GiB files
+    *) echo "SCALE=auto supports score/capacity only" >&2; exit 1 ;;
+  esac
+  [ -r /proc/meminfo ] || { echo "SCALE=auto requires /proc/meminfo (Linux)" >&2; exit 1; }
+  MEM_KIB=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
+  SCALE=$(python3 -c "import sys; print(round(max(float(sys.argv[1])/1048576*2/float(sys.argv[2]),0.15),3))" "$MEM_KIB" "$FULL_READ_GIB")
+  echo "=== SCALE=auto: node MemTotal $((MEM_KIB/1024)) MiB -> scale $SCALE (read set = 2x RAM)"
+fi
 
 # default parameter set per scenario (sizes in GiB, times in s)
 case $SCENARIO in
