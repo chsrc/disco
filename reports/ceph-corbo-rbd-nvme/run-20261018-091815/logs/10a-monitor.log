@@ -1,9 +1,0 @@
-psrecord-log: (g=0): rw=write, bs=(R) 256B-256B, (W) 256B-256B, (T) 256B-256B, ioengine=psync, iodepth=1
-fio-3.36
-Starting 1 process
-psrecord-log: Laying out IO file (1 file / 0MiB)
-
-fio: terminating on signal 15
-
-fio: terminating on signal 15
-fio: select() call in helper thread failed: Interrupted system call

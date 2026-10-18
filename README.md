@@ -112,10 +112,9 @@ clear reason:
 - The **image rewrite loop** repeats a small read and write. Its
   interesting part is the timing of the repeats, not the speed of the
   storage.
-- Two jobs keep slow rates on purpose. The **viewer** phase models a
+- One job keeps a slow rate on purpose. The **viewer** phase models a
   person browsing images, so it reads slowly by design and is judged on
-  how long a single read takes. The **monitoring log** writes a small
-  line ten times per second, like the real monitoring tool.
+  how long a single read takes.
 
 The full catalog still exists. The capacity scenario runs all of it when
 you want the ceiling on every pattern. The scoring only covers the eight
@@ -185,11 +184,10 @@ Each mode answers a different question:
 - **score** is the default measurement and what the report uses. It
   removes the rate caps, so the storage does the best it can, and runs
   each phase three times by default (`REPEATS=1` for quick iteration).
-  Two jobs
-  keep a slow rate on purpose, because the rate is part of what they
-  model: the interactive viewer (a person browsing reads slowly, its
-  metric is how long one read takes) and the monitoring log (a small line
-  ten times per second).
+  One job
+  keeps a slow rate on purpose, because the rate is part of what it
+  models: the interactive viewer (a person browsing reads slowly, its
+  metric is how long one read takes).
 - **paced score** runs the same eight phases at the real recorded demand
   rates. It checks that the storage keeps up with the real tempo over a
   sustained stretch. It cannot separate a storage that barely keeps up
@@ -255,7 +253,6 @@ for that fraction of the full DSC size.
 | 08 | `08-carta-random-tiles.fio` | Random 256 KB reads, rate-limited, 4 sessions | CARTA interactive visualisation | 300 s fixed runtime |
 | 09/09b | `09-staging-ingest.fio` | 250 MB/s network-rate write. verify re-read | Rucio download + checksum | COLA |
 | 10 | `10-smallfile-monitor.fio` | PNG storm (2000×128 KB) + catalogues | per-source plots, catalogue writes | (n/a) |
-| 10a | `10a-monitor-background.fio` | 10 Hz tiny writes, background | psrecord logging | started/killed by runner |
 | 11 | `11-sparse-baseline-qa.fio` | Random 8 KB reads, <1% of volume | single-baseline TaQL QA, shadems | QA |
 
 Two modes per profile: **fidelity** (rate-limited to measured per-process

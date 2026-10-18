@@ -59,16 +59,15 @@ pjsz() { python3 -c "import sys; print(max(int(float(sys.argv[1])/int(sys.argv[2
 # (envsubst with an explicit variable list), then either strip the rate= caps
 # (UNCAPPED=1, used by score/capacity for capability measurement) or apply
 # the RATE_MULT factor to them (replay modes).
-# Three jobs keep their rate even when uncapped, because the rate is part
-# of what they model, not a demand cap: the interactive viewer (a person
-# browsing reads slowly, its metric is read latency) and the monitoring
-# logs (a small line ten times per second, like the real monitoring tool).
+# The interactive viewer keeps its rate even when uncapped, because the
+# rate is part of what it models, not a demand cap: a person browsing reads
+# slowly, its metric is read latency.
 render() {
   local jobfile="$1"
   local strip=0
   if [ "${UNCAPPED:-0}" = "1" ]; then
     case "$jobfile" in
-      *08-carta*|*10-smallfile*|*10a-monitor*) strip=0 ;;
+      *08-carta*|*10-smallfile*) strip=0 ;;
       *) strip=1 ;;
     esac
   fi
@@ -179,12 +178,6 @@ capacity) # pure storage capability probe: all phases, rate caps multiplied
 esac
 
 NIMG_W=$(python3 -c "import sys; print(max(int(int(sys.argv[1])/8),1))" "$NIMG")
-# ---- Background: psrecord-style monitoring log (runs concurrently, killed at end) ----
-MONJOB="$RUN/10a-monitor-background.fio"
-render "$PROFILES/10a-monitor-background.fio" > "$MONJOB"
-fio "$MONJOB" > "$RUN/logs/10a-monitor.log" 2>&1 &
-MONPID=$!
-trap 'kill $MONPID 2>/dev/null || true' EXIT
 
 # ---- Phase 0: staging/ingest (Rucio-like sequential write + checksum re-read) ----
 phase 00-ingest-write 09-staging-ingest.fio
@@ -225,6 +218,5 @@ phase 09-qa-sparse 11-sparse-baseline-qa.fio
 # ---- Phase 10: small-file / metadata storm (PNG fan-out, catalogues) ----
 phase 10-smallfiles 10-smallfile-monitor.fio
 
-kill $MONPID 2>/dev/null || true
 echo "=== scenario $SCENARIO complete; results in $RUN"
 echo "per-phase fio JSON: $RUN/logs/<phase>.json"
