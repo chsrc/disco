@@ -8,13 +8,12 @@ Built from the actual Detailed Science Case (DSC) workflows: their code,
 their real datasets, and recordings of their real runs. The name is an
 anagram of *DSC I/O*.
 
-**Contents:** [how it was built](#how-these-benchmarks-were-built) ·
-[the phases](#the-phases-and-what-they-represent) ·
+**Contents:** [how it was built](#how-were-these-benchmarks-built) ·
+[the phases](#io-phases) ·
 [why they are representative](#what-makes-the-phases-representative) ·
-[limitations](#what-we-deliberately-did-not-copy) ·
+[limitations](#what-did-we-omit-deliberately) ·
 [running it](#running-the-benchmarks) ·
-[reading results](#reading-the-results) ·
-[detailed docs](#detailed-documentation)
+[reading results](#reading-the-results)
 
 ---
 
@@ -99,8 +98,8 @@ since we do not care about producing a scientific result, but only benchmarking 
 
 ## Why these eight phases
 
-The score runs 8 of the 14 job files. Together they carry 89% of the bytes
-the reference workload moves. Each of the other six is left out for a
+The score runs 8 of the 13 job files. Together they carry 89% of the bytes
+the reference workload moves. Each of the other five is left out for a
 clear reason:
 
 - The **staging verify** step re-reads the file the ingest step just wrote.
@@ -118,7 +117,7 @@ clear reason:
 
 The full catalog still exists. The capacity scenario runs all of it when
 you want the ceiling on every pattern. The scoring only covers the eight
-phases, because the other six have no measured reference to compare
+phases, because the other five have no measured reference to compare
 against.
 
 ## What makes the phases representative?
@@ -145,8 +144,10 @@ documents this per phase.
 
 ## What did we omit deliberately?
 
-- **The compute.** The real runs are mostly CPU-bound.
-  The benchmark produces no CPU load and no large memory footprint.
+- **The compute.** The real runs are not purely compute-bound — CPU
+  averaged ~60% during heavy reads, a mixed regime of serial software
+  phases and I/O wait. The benchmark reproduces only the I/O side: no CPU
+  load and no large memory footprint.
   Consequence: the benchmark's page cache is not disturbed by application memory the way
   the real workload's is. This is the main known divergence.
 - **Duration, in the fast modes.** We aim to produce a score within minutes,
@@ -155,10 +156,11 @@ documents this per phase.
 
 ## Running the benchmarks
 
-Dependencies: bash, fio, python3, gettext (`envsubst`).
+Dependencies: bash, fio, python3, gettext (`envsubst`); coreutils
+`timeout` when using the `MAXTIME` watchdog.
 
 ```bash
-./run-scenario.sh score    <dir-on-storage-under-test>   # ~45 min, the measurement
+./run-scenario.sh score    <dir-on-storage-under-test>   # the measurement
 ./run-scenario.sh capacity <dir>                         # same method, all phases
 ./run-scenario.sh dsc-065  <dir> 1.0                    # ~3-4 h, replays the real run
 JOBS=8    ./run-scenario.sh score <dir>                 # multi-stream check
@@ -168,16 +170,19 @@ python3 score.py <run-dir>                                # metrics + score
 ```
 
 On a cluster: `deploy/` has ready-made Job YAMLs for three storage
-classes, a results fetch script, and a Dockerfile. The session images on
+classes and a Dockerfile. The session images on
 the SRCNet nodes do not ship fio. Install it in your user space with
-`conda install -c conda-forge fio gettext`.
+`conda install -c conda-forge fio gettext`. Results accumulate under
+`/data/bench/run-<ts>/` inside the container (on the volume under test);
+the Job's TTL cleans the container up an hour after it finishes, so copy
+results out before that.
 
 Each mode answers a different question:
 
 | Question it answers | Command | Wall time |
 |----------------------|---------|-----------|
-| How fast can this storage serve the DSC patterns? | `./run-scenario.sh score <dir>` | ~45 min (three repetitions by default) |
-| Does the storage sustain the real demand rates on the eight key phases? | `UNCAPPED=0 RATE_MULT=1 ./run-scenario.sh score <dir>` | ~45 min |
+| How fast can this storage serve the DSC patterns? | `./run-scenario.sh score <dir>` | ~20 min on fast classes, up to ~1.5 h on slow ones (three pooled repetitions) |
+| Does the storage sustain the real demand rates on the eight key phases? | `UNCAPPED=0 RATE_MULT=1 ./run-scenario.sh score <dir>` | ~20 min–1.5 h |
 | Does the storage deliver the full recorded experience, structure and duration included? | `./run-scenario.sh dsc-065 <dir> 1.0` | hours |
 | What is the ceiling on every pattern, including the ones the score does not weigh? | `./run-scenario.sh capacity <dir>` | minutes |
 
@@ -194,8 +199,8 @@ Each mode answers a different question:
   from one with ten times the headroom, which is why the uncapped score
   is the primary number and this is the check.
 - **replay** reproduces the rates, the structure and the duration of the
-  recorded runs: all patterns chained in pipeline order, several cycles,
-  idle gaps, a background monitoring load. Durations range from about 30
+  recorded runs: all patterns chained in pipeline order, several cycles
+  and idle gaps. Durations range from about 30
   minutes for the small scenarios to about 20 hours for `dsc-065-deep`.
   Use it to validate a storage against the measured traces, whose
   reference numbers are in the report and in the provenance table inside
@@ -229,7 +234,10 @@ gornergrat cluster: Ceph RBD on NVMe, Ceph RBD on HDD, VAST NFS).
 Use it for the multi-stream check, because rankings can flip between
 single-stream and multi-stream on parallel-friendly filesystems.
 
-`PHASES="a b c"` runs only the named phases.
+`PHASES="a b c"` runs only the named phases. The names (as in
+`run-scenario.sh`): `00-ingest-write`, `02-reorder`, `03-major-cycles`,
+`04-column-rmw`, `06-imagechain-gen1`, `08-carta-tiles`, `09-qa-sparse`,
+`10-smallfiles` — these are all 8, so `PHASES` only ever narrows the run.
 
 `scale` (the third argument) is omitted by default: the read working set
 is sized to 2× the node's RAM automatically — read from `/proc/meminfo`,
@@ -238,13 +246,20 @@ guessing. On the 16 GiB gornergrat nodes that resolves to ~0.16 (a
 ~30 GB set). Pass `full` for the real dataset sizes (1.0), or a number
 for that fraction of the full DSC size.
 
+`MAXTIME=SECONDS` puts a watchdog on every phase: one that runs longer
+than this is killed and reported as failed, instead of hanging the whole
+benchmark for hours. It is a guard, not a measurement method — a healthy
+phase is never affected, because size-based phases stop on their own when
+the workload is done. `MAXTIME=0` (default) disables it; the cluster Job
+manifests set it to 3600.
+
 ## Profiles (profiles/*.fio)
 
 | # | File | Pattern | Models | Key params |
 |---|------|---------|--------|------------|
 | 01 | `01-ms-tile-scan.fio` | MS column scan, ~16 KB syscalls, rate-limited | WSClean/DP3/casacore MS reads | COLA, COLB (two TSM column files), 81 metadata files |
 | 02 | `02-reorder-copy.fio` | Concurrent seq read + seq write of same size | wsclean `-reorder`, DDFacet `.ddfcache` | REORD (~0.5to1× data column) |
-| 03 | `03-major-cycle-rereads.fio` | N repeated full sequential passes | CottontoSchwab major cycles (2 passes/cycle) | CYCLES (≈2× major iterations) |
+| 03 | `03-major-cycle-rereads.fio` | N repeated full sequential passes | Cotton–Schwab major cycles (2 passes/cycle) | CYCLES (≈2× major iterations) |
 | 04 | `04-column-rmw.fio` | 1 GB-chunk interleaved column read + write | DP3 applybeam, Crystalball MODEL_DATA, casacore subtract (100k-row chunks) | REORD |
 | 04b | `04b-ms-copytree.fio` | Whole-MS copy | DSC-008 Step 5b copytree, DSC-035 `cp` chains | COLB |
 | 05 | `05-burst-read.fio` | 2 GB/s full-file RAM load | pyuvdata/hera_pspec/PSRCHIVE/PyBDSF whole-file loads | COLA+COLB (runner adds idle gap) |
@@ -255,31 +270,11 @@ for that fraction of the full DSC size.
 | 10 | `10-smallfile-monitor.fio` | PNG storm (2000×128 KB) + catalogues | per-source plots, catalogue writes | (n/a) |
 | 11 | `11-sparse-baseline-qa.fio` | Random 8 KB reads, <1% of volume | single-baseline TaQL QA, shadems | QA |
 
-Two modes per profile: **fidelity** (rate-limited to measured per-process
-rates, looks like the real trace) and **capacity** (remove `rate=`, larger
-`bs`, measures the storage ceiling). Job-file headers document both.
+Two modes per profile: **fidelity** (rate-limited to the measured
+per-process rates, looks like the real trace — the replay scenarios) and
+**capability** (the runner strips the caps; the capacity scenario raises
+them ×1000, measuring the storage ceiling). Job-file headers document
+both.
 
 ## Reports
 
-Results of runs on storage classes under test live in `reports/<class>/run-<ts>/`
-(fio JSONs + rendered job files + job log). The comparison report is
-`reports/report.html`. Regenerate it after adding new runs:
-
-    python3 make_report.py            # reads reports/, writes reports/report.html
-
-
-## Notes & caveats
-
-- **The score is a short measurement, valid under three conditions.** Each
-  phase should run past its transient regime. The working set should be
-  at least twice the node RAM: at one times RAM much of the data can stay
-  resident in the page cache, so a large share of reads still comes from
-  memory. At two times, every pass through the data must miss the cache
-  about half the time, so the measurement is dominated by real storage
-  traffic. And repeat: the default three repetitions
-  (`REPEATS=3`) cover short-term variance, but back-to-back repetitions
-  are correlated. Interference from other tenants comes and goes over
-  hours, so for a decision you care about, repeat whole runs spread over
-  a day.
-- For multi-client aggregate testing (the DP3-AA4 shared-storage failure
-  mode), run several scenarios concurrently on different clients.
